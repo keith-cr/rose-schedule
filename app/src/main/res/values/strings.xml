@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Rose Schedule</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_right_now">Right Now</string>
+    <string name="title_daily_view">Daily View</string>
+    <string name="title_weekly_view">Weekly View</string>
+</resources>
