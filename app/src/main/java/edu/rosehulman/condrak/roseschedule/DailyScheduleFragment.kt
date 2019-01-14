@@ -10,9 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import edu.rosehulman.condrak.roseschedule.dummy.DummyContent
-import edu.rosehulman.condrak.roseschedule.dummy.DummyContent.DummyItem
-
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
@@ -21,6 +18,7 @@ import edu.rosehulman.condrak.roseschedule.dummy.DummyContent.DummyItem
 class DailyScheduleFragment : Fragment() {
 
     private var schedule: Schedule? = null
+    private var scheduleTiming: ScheduleTiming? = null
 
     private var listener: OnListFragmentInteractionListener? = null
 
@@ -29,6 +27,7 @@ class DailyScheduleFragment : Fragment() {
 
         arguments?.let {
             schedule = it.getParcelable(ARG_SCHEDULE)
+            scheduleTiming = it.getParcelable(ARG_SCHEDULE_TIMING)
         }
     }
 
@@ -42,7 +41,7 @@ class DailyScheduleFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = DailyScheduleRecyclerViewAdapter(DummyContent.ITEMS, listener)
+                adapter = DailyScheduleRecyclerViewAdapter(schedule!!, scheduleTiming!!, listener)
             }
         }
         return view
@@ -74,17 +73,19 @@ class DailyScheduleFragment : Fragment() {
      * for more information.
      */
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: DummyItem?)
+        fun onListFragmentInteraction(item: Schedule?)
     }
 
     companion object {
         const val ARG_SCHEDULE = "schedule"
+        const val ARG_SCHEDULE_TIMING = "scheduleTiming"
 
         @JvmStatic
-        fun newInstance(schedule: Schedule) =
+        fun newInstance(schedule: Schedule, scheduleTiming: ScheduleTiming) =
             DailyScheduleFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_SCHEDULE, schedule)
+                    putParcelable(ARG_SCHEDULE_TIMING, scheduleTiming)
                 }
             }
     }
