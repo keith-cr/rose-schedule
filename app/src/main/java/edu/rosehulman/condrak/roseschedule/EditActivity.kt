@@ -10,7 +10,7 @@ class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInt
         val intent = Intent(this, EditPeriodActivity::class.java).apply {
             putExtra(SCHEDULE, schedule)
             putExtra(DAY, day)
-            putExtra(PERIOD, classPeriod.periodNumber)
+            putExtra(PERIOD, classPeriod.periodNumber-1)
             putExtra(SCHEDULE_SETTINGS, scheduleSettings)
         }
         startActivity(intent)
@@ -44,6 +44,19 @@ class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInt
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        // Save the user's current game state
+        outState?.run {
+            putParcelable(SCHEDULE, schedule)
+            putParcelable(SCHEDULE_SETTINGS, scheduleSettings)
+            putParcelable(SCHEDULE_TIMING, scheduleTiming)
+            putInt(DAY, day)
+        }
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(outState)
+    }
+
     companion object {
         const val SCHEDULE = "schedule"
         const val DAY = "day"
@@ -51,5 +64,4 @@ class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInt
         const val SCHEDULE_SETTINGS = "scheduleSettings"
         const val SCHEDULE_TIMING = "scheduleTiming"
     }
-
 }

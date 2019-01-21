@@ -78,6 +78,7 @@
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1"
+        android:id="@+id/nextClassLayout"
         android:orientation="vertical">
         <RelativeLayout
             android:layout_height="wrap_content"

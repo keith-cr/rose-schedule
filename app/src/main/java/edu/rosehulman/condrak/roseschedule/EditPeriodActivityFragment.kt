@@ -30,7 +30,7 @@ class EditPeriodActivityFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_edit_period, container, false)
         view.editClass.setText(schedule!!.days[day!!].periods[period!!].className)
         view.editLocation.setText(schedule!!.days[day!!].periods[period!!].classLocation)
-
+        activity?.title = schedule!!.days[day!!].periods[period!!].getPeriodText()
         return view
     }
 

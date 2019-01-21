@@ -24,14 +24,31 @@ class EditDayActivity : AppCompatActivity(), EditDayActivityFragment.OnListFragm
         setContentView(R.layout.activity_edit_day)
         setSupportActionBar(toolbar)
 
-        scheduleSettings = intent.getParcelableExtra(SCHEDULE_SETTINGS)
-        schedule = intent.getParcelableExtra(SCHEDULE)
-        scheduleTiming = ScheduleTiming(scheduleSettings)
-
+        if (savedInstanceState != null) {
+            scheduleSettings = savedInstanceState.getParcelable(SCHEDULE_SETTINGS)!!
+            schedule = savedInstanceState.getParcelable(SCHEDULE)!!
+            scheduleTiming = savedInstanceState.getParcelable(SCHEDULE_TIMING)!!
+        } else {
+            scheduleSettings = intent.getParcelableExtra(SCHEDULE_SETTINGS)
+            schedule = intent.getParcelableExtra(SCHEDULE)
+            scheduleTiming = ScheduleTiming(scheduleSettings)
+        }
 
         supportFragmentManager.beginTransaction().replace(R.id.content, EditDayActivityFragment.newInstance(schedule, scheduleTiming)).commit()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        // Save the user's current game state
+        outState?.run {
+            putParcelable(SCHEDULE, schedule)
+            putParcelable(SCHEDULE_SETTINGS, scheduleSettings)
+            putParcelable(SCHEDULE_TIMING, scheduleTiming)
+        }
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(outState)
     }
 
     companion object {

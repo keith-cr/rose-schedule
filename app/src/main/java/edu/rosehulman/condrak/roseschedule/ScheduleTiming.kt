@@ -24,7 +24,7 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
     private fun currentPeriod(day: Day): Int {
         for (period in day.periods) {
             if (isNow(period))
-                return period.periodNumber
+                return period.periodNumber-1
         }
         return if (getStartTime(ClassPeriod(10,"","")).isBefore(LocalTime()))
             -2
@@ -52,7 +52,7 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
         }
     }
 
-    fun getNextClass(schedule: Schedule): ClassPeriod {
+    fun getNextClass(schedule: Schedule): ClassPeriod? {
         if (LocalDate().dayOfWeek in 1..5) {
             var day = LocalDate().dayOfWeek
             val currentPeriod = currentPeriod(schedule.days[day-1])
@@ -71,7 +71,10 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
                     periodsWithoutFrees[0]
                 }
                 else -> {
-                    schedule.days[day].periods[currentPeriod]
+                    if (schedule.days[day].periods.size == currentPeriod+1)
+                        null
+                    else
+                        schedule.days[day].periods[currentPeriod+1]
                 }
             }
         } else {

@@ -4,7 +4,6 @@ package edu.rosehulman.condrak.roseschedule
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +34,6 @@ class RightNowFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d(Constants.TAG, "Destroyed")
         refreshHandler.removeCallbacksAndMessages(null)
     }
 
@@ -62,8 +60,10 @@ class RightNowFragment : Fragment() {
         val nextClass = scheduleTiming?.getNextClass(schedule!!)
         if (currClass != null) {
             view.currentClassPeriodNumber.text = currClass.getPeriodText()
-            view.currentClassInfo.text =
-                    resources.getString(R.string.class_text, currClass.className, currClass.classLocation)
+            view.currentClassInfo.text = if (currClass.hasLocation())
+                resources.getString(R.string.class_text, currClass.className, currClass.classLocation)
+            else
+                currClass.className
             view.currentClassEndTime.text = resources.getString(R.string.class_end_time,
                 scheduleTiming!!.getEndTime(currClass).toString("h:mm a"))
             view.currentClassEndTimeRelative.text = resources.getString(R.string.class_time_relative,
@@ -73,12 +73,16 @@ class RightNowFragment : Fragment() {
         }
         if (nextClass != null) {
             view.nextClassPeriodNumber.text = nextClass.getPeriodText()
-            view.nextClassInfo.text =
-                    resources.getString(R.string.class_text, nextClass.className, nextClass.classLocation)
+            view.nextClassInfo.text = if (nextClass.hasLocation())
+                resources.getString(R.string.class_text, nextClass.className, nextClass.classLocation)
+            else
+                nextClass.className
             view.nextClassStartTime.text = resources.getString(R.string.class_start_time,
                 scheduleTiming!!.getStartTime(nextClass).toString("h:mm a"))
             view.nextClassStartTimeRelative.text = resources.getString(R.string.class_time_relative,
                 scheduleTiming!!.getRelativeStartTime(nextClass))
+        } else {
+            view.nextClassLayout.visibility = View.GONE
         }
     }
 
