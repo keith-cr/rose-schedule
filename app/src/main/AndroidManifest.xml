@@ -14,9 +14,9 @@
         <activity
             android:name=".EditPeriodActivity"
             android:label="@string/title_activity_edit_period"
+            android:launchMode="singleTask"
             android:parentActivityName=".EditActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.rosehulman.condrak.roseschedule.EditActivity" />
@@ -24,9 +24,9 @@
         <activity
             android:name=".EditActivity"
             android:label="@string/title_edit_schedule"
+            android:launchMode="singleTask"
             android:parentActivityName=".EditDayActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.rosehulman.condrak.roseschedule.EditDayActivity" />
@@ -34,9 +34,9 @@
         <activity
             android:name=".EditDayActivity"
             android:label="@string/title_edit_schedule"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.rosehulman.condrak.roseschedule.MainActivity" />

@@ -7,16 +7,45 @@
     tools:context=".EditPeriodActivityFragment"
     tools:showIn="@layout/activity_edit_period">
 
-    <EditText
-        android:id="@+id/editClass"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/free_period"/>
+
+    <Switch
+        android:id="@+id/switchFreePeriod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/name_text_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/class_" />
+        android:layout_below="@+id/switchFreePeriod">
+
+        <EditText
+            android:id="@+id/editClass"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/class_" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/location_text_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_text_input_layout">
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:id="@+id/editLocation"
-        android:hint="@string/location"
-        android:layout_below="@id/editClass"/>
+        android:layout_margin="0dp"
+        android:hint="@string/location" />
+
+    </android.support.design.widget.TextInputLayout>
 </RelativeLayout>

@@ -28,8 +28,25 @@ class EditPeriodActivityFragment : Fragment() {
             period = it.getInt(ARG_PERIOD)
         }
         val view = inflater.inflate(R.layout.fragment_edit_period, container, false)
-        view.editClass.setText(schedule!!.days[day!!].periods[period!!].className)
-        view.editLocation.setText(schedule!!.days[day!!].periods[period!!].classLocation)
+        if (schedule!!.days[day!!].periods[period!!].isFree) {
+            view.switchFreePeriod.isChecked = true
+            view.name_text_input_layout.visibility = View.GONE
+            view.location_text_input_layout.visibility = View.GONE
+        } else {
+            view.editClass.setText(schedule!!.days[day!!].periods[period!!].className)
+            view.editLocation.setText(schedule!!.days[day!!].periods[period!!].classLocation)
+        }
+        view.switchFreePeriod.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                view.name_text_input_layout.visibility = View.GONE
+                view.location_text_input_layout.visibility = View.GONE
+            } else {
+                view.editClass.setText(schedule!!.days[day!!].periods[period!!].className)
+                view.editLocation.setText(schedule!!.days[day!!].periods[period!!].classLocation)
+                view.name_text_input_layout.visibility = View.VISIBLE
+                view.location_text_input_layout.visibility = View.VISIBLE
+            }
+        }
         activity?.title = schedule!!.days[day!!].periods[period!!].getPeriodText()
         return view
     }
