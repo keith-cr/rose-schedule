@@ -4,9 +4,20 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class ClassPeriod (var periodNumber: Int, var className: String, var classLocation: String): Parcelable {
+data class ClassPeriod (var periodNumber: Int, var className: String, var classLocation: String,
+                        var isFree: Boolean): Parcelable {
+    constructor(periodNumber: Int): this(periodNumber, "Free", "", true)
+
+    constructor(periodNumber: Int, className: String, classLocation: String):
+            this(periodNumber, className, classLocation, false)
+
     fun getPeriodText(): String  {
-        var prefix = when (periodNumber) {
+        val prefix = getShortPeriodText()
+        return  "$prefix Period"
+    }
+
+    fun getShortPeriodText(): String {
+        return when (periodNumber) {
             1 -> "1st"
             2 -> "2nd"
             3 -> "3rd"
@@ -19,7 +30,6 @@ data class ClassPeriod (var periodNumber: Int, var className: String, var classL
             10 -> "10th"
             else -> "${periodNumber}th"
         }
-        return  "$prefix Period"
     }
 
     fun hasLocation(): Boolean {

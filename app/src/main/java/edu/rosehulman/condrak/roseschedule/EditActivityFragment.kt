@@ -14,7 +14,7 @@ import android.view.ViewGroup
  * Activities containing this fragment MUST implement the
  * [DailyScheduleFragment.OnListFragmentInteractionListener] interface.
  */
-class DailyScheduleFragment : Fragment() {
+class EditActivityFragment : Fragment() {
 
     private var schedule: Schedule? = null
     private var scheduleTiming: ScheduleTiming? = null
@@ -35,14 +35,14 @@ class DailyScheduleFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val dayName:String = schedule!!.days[scheduleTiming!!.getCurrentClassDay()].name
-        activity?.title = resources.getString(R.string.daily_fragment_title, dayName)
-        val view = inflater.inflate(R.layout.fragment_daily_schedule_list, container, false)
+        activity?.title = getString(R.string.title_edit_schedule)
+        val view = inflater.inflate(R.layout.fragment_edit_list, container, false)
 
         // Set the adapter
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = DailyScheduleRecyclerViewAdapter(schedule!!, scheduleTiming!!, listener)
+                adapter = EditActivityRecyclerViewAdapter(schedule!!, scheduleTiming!!, listener)
             }
         }
         return view
@@ -74,7 +74,7 @@ class DailyScheduleFragment : Fragment() {
      * for more information.
      */
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: Schedule?)
+        fun onListFragmentInteraction(classPeriod: ClassPeriod, day: Int)
     }
 
     companion object {
@@ -83,7 +83,7 @@ class DailyScheduleFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(schedule: Schedule, scheduleTiming: ScheduleTiming) =
-            DailyScheduleFragment().apply {
+            EditActivityFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_SCHEDULE, schedule)
                     putParcelable(ARG_SCHEDULE_TIMING, scheduleTiming)

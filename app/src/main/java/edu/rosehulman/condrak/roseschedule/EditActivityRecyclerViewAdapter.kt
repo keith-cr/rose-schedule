@@ -4,33 +4,31 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import edu.rosehulman.condrak.roseschedule.EditActivityFragment.OnListFragmentInteractionListener
+import kotlinx.android.synthetic.main.fragment_edit.view.*
 
-import edu.rosehulman.condrak.roseschedule.DailyScheduleFragment.OnListFragmentInteractionListener
-
-import kotlinx.android.synthetic.main.fragment_daily__schedule.view.*
-import org.joda.time.LocalDate
-
-class DailyScheduleRecyclerViewAdapter(
+class EditActivityRecyclerViewAdapter(
     private val schedule: Schedule,
     private val scheduleTiming: ScheduleTiming,
     private val mListener: OnListFragmentInteractionListener?
-) : RecyclerView.Adapter<DailyScheduleRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<EditActivityRecyclerViewAdapter.ViewHolder>() {
 
     private var day: Int = scheduleTiming.getCurrentClassDay()
     private val mOnClickListener: View.OnClickListener
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as Schedule
+            // TODO: Fix
+            val item = v.tag as ClassPeriod
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
+            mListener?.onListFragmentInteraction(item, 0)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_daily__schedule, parent, false)
+            .inflate(R.layout.fragment_edit, parent, false)
         return ViewHolder(view)
     }
 
@@ -38,21 +36,13 @@ class DailyScheduleRecyclerViewAdapter(
         val period = schedule.days[day].periods[position]
 
         with(holder.mView) {
-            tag = schedule
+            tag = period
             setOnClickListener(mOnClickListener)
             periodTextView.text = period.getPeriodText()
             if (period.hasLocation())
                 classTextView.text = resources.getString(R.string.class_text, period.className, period.classLocation)
             else
                 classTextView.text = period.className
-            startTimeTextView.text = scheduleTiming.getStartTime(period).toString("h:mm aa")
-            endTimeTextView.text = scheduleTiming.getEndTime(period).toString("h:mm aa")
-            if (scheduleTiming.isNow(period) && day == LocalDate().dayOfWeek-1) {
-                periodTextView.setTextColor(resources.getColor(R.color.colorPrimary, null))
-                classTextView.setTextColor(resources.getColor(R.color.colorPrimary, null))
-                startTimeTextView.setTextColor(resources.getColor(R.color.colorPrimary, null))
-                endTimeTextView.setTextColor(resources.getColor(R.color.colorPrimary, null))
-            }
         }
     }
 
