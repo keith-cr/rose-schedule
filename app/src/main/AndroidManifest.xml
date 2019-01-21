@@ -10,8 +10,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".EditPeriodActivity"
+            android:label="@string/title_activity_edit_period"
+            android:parentActivityName=".EditActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.rosehulman.condrak.roseschedule.EditActivity" />
+        </activity>
+        <activity
             android:name=".EditActivity"
-            android:label="@string/title_activity_edit"
+            android:label="@string/title_edit_schedule"
+            android:parentActivityName=".EditDayActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.rosehulman.condrak.roseschedule.EditDayActivity" />
+        </activity>
+        <activity
+            android:name=".EditDayActivity"
+            android:label="@string/title_edit_schedule"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

@@ -4,47 +4,42 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import edu.rosehulman.condrak.roseschedule.EditActivityFragment.OnListFragmentInteractionListener
-import kotlinx.android.synthetic.main.fragment_edit.view.*
+import edu.rosehulman.condrak.roseschedule.EditDayActivityFragment.OnListFragmentInteractionListener
+import kotlinx.android.synthetic.main.fragment_edit_day.view.*
 
-class EditActivityRecyclerViewAdapter(
+class EditDayActivityRecyclerViewAdapter(
     private val schedule: Schedule,
-    private val day: Int,
     scheduleTiming: ScheduleTiming,
     private val mListener: OnListFragmentInteractionListener?
-) : RecyclerView.Adapter<EditActivityRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<EditDayActivityRecyclerViewAdapter.ViewHolder>() {
     private val mOnClickListener: View.OnClickListener
 
     init {
         mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as ClassPeriod
+            val item = v.tag as Int
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item, day)
+            mListener?.onListFragmentInteraction(item)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_edit, parent, false)
+            .inflate(R.layout.fragment_edit_day, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val period = schedule.days[day].periods[position]
+        val day = schedule.days[position]
 
         with(holder.mView) {
-            tag = period
+            tag = position
             setOnClickListener(mOnClickListener)
-            periodTextView.text = period.getPeriodText()
-            if (period.hasLocation())
-                classTextView.text = resources.getString(R.string.class_text, period.className, period.classLocation)
-            else
-                classTextView.text = period.className
+            dayTextView.text = day.name
         }
     }
 
-    override fun getItemCount(): Int = schedule.days[day].periods.size
+    override fun getItemCount(): Int = schedule.days.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView)
 }

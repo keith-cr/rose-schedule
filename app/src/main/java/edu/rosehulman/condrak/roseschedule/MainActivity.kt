@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
 
         when (id) {
             R.id.action_edit_schedule -> {
-                val intent = Intent(this, EditActivity::class.java).apply {
+                val intent = Intent(this, EditDayActivity::class.java).apply {
                     putExtra(SCHEDULE, schedule)
                     putExtra(SCHEDULE_SETTINGS, scheduleSettings)
                 }

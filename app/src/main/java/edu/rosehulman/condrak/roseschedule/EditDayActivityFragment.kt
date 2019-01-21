@@ -14,7 +14,7 @@ import android.view.ViewGroup
  * Activities containing this fragment MUST implement the
  * [DailyScheduleFragment.OnListFragmentInteractionListener] interface.
  */
-class EditActivityFragment : Fragment() {
+class EditDayActivityFragment : Fragment() {
 
     private var schedule: Schedule? = null
     private var scheduleTiming: ScheduleTiming? = null
@@ -28,7 +28,6 @@ class EditActivityFragment : Fragment() {
         arguments?.let {
             schedule = it.getParcelable(ARG_SCHEDULE)
             scheduleTiming = it.getParcelable(ARG_SCHEDULE_TIMING)
-            day = it.getInt(ARG_DAY)
         }
     }
 
@@ -42,7 +41,7 @@ class EditActivityFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = EditActivityRecyclerViewAdapter(schedule!!, day!!, scheduleTiming!!, listener)
+                adapter = EditDayActivityRecyclerViewAdapter(schedule!!, scheduleTiming!!, listener)
             }
         }
         return view
@@ -74,20 +73,18 @@ class EditActivityFragment : Fragment() {
      * for more information.
      */
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(classPeriod: ClassPeriod, day: Int)
+        fun onListFragmentInteraction(day: Int)
     }
 
     companion object {
         const val ARG_SCHEDULE = "schedule"
-        const val ARG_DAY = "day"
         const val ARG_SCHEDULE_TIMING = "scheduleTiming"
 
         @JvmStatic
-        fun newInstance(schedule: Schedule, day: Int, scheduleTiming: ScheduleTiming) =
-            EditActivityFragment().apply {
+        fun newInstance(schedule: Schedule, scheduleTiming: ScheduleTiming) =
+            EditDayActivityFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_SCHEDULE, schedule)
-                    putInt(ARG_DAY, day)
                     putParcelable(ARG_SCHEDULE_TIMING, scheduleTiming)
                 }
             }

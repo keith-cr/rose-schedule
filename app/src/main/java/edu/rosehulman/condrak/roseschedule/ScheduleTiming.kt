@@ -33,7 +33,7 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
     }
 
     fun getCurrentClass(schedule: Schedule): ClassPeriod? {
-        var day = getCurrentClassDay()
+        val day = getCurrentClassDay()
         if (LocalDate().dayOfWeek in 1..5) {
             val currentPeriod = currentPeriod(schedule.days[day])
             return when (currentPeriod) {

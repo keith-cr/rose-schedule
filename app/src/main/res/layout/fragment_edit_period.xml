@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    tools:context=".EditPeriodActivityFragment"
+    tools:showIn="@layout/activity_edit_period">
+
+    <EditText
+        android:id="@+id/editClass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/class_" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editLocation"
+        android:hint="@string/location"
+        android:layout_below="@id/editClass"/>
+</RelativeLayout>

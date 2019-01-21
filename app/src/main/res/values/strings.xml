@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Rose Schedule</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -24,5 +24,8 @@
     <string name="action_edit_schedule">Edit Schedule</string>
     <string name="action_notifications">Notifications</string>
     <string name="action_login">Login</string>
-    <string name="title_edit_schedule">Edit Schedule</string>
+    <string name="title_edit_schedule" tools:ignore="ExtraTranslation">Edit Schedule</string>
+    <string name="title_activity_edit_period">EditPeriodActivity</string>
+    <string name="class_">Class</string>
+    <string name="location">Location</string>
 </resources>
