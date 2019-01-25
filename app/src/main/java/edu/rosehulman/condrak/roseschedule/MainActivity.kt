@@ -8,10 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
-import net.danlew.android.joda.JodaTimeAndroid
-import org.joda.time.DateTimeZone
 import org.joda.time.LocalTime
-import java.util.*
 
 // Fragment switching code from https://stackoverflow.com/a/46600951
 class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentInteractionListener {
@@ -54,8 +51,6 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        JodaTimeAndroid.init(this)
-        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getDefault()))
         if (savedInstanceState != null) {
             scheduleSettings = savedInstanceState.getParcelable(SCHEDULE_SETTINGS)!!
             schedule = savedInstanceState.getParcelable(SCHEDULE)!!
@@ -67,6 +62,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
             scheduleTiming = ScheduleTiming(scheduleSettings)
             currentFragment = CurrentFragment.RIGHT_NOW
         }
+        scheduleTiming.init(this)
         setContentView(R.layout.activity_main)
         val ft = supportFragmentManager.beginTransaction()
         val fragment: Fragment = when (currentFragment) {

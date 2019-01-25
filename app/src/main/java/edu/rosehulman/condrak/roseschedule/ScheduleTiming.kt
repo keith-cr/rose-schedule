@@ -1,12 +1,21 @@
 package edu.rosehulman.condrak.roseschedule
 
+import android.content.Context
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.*
 import org.joda.time.format.PeriodFormatterBuilder
+import java.util.*
 
 @Parcelize
 class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelable {
+
+    fun init(context: Context) {
+        JodaTimeAndroid.init(context)
+        DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getDefault()))
+    }
+
     fun getStartTime(classPeriod: ClassPeriod): LocalTime {
         return scheduleSettings.firstPeriodStartTime.plusMinutes((classPeriod.periodNumber-1)
                 *(scheduleSettings.periodLength+scheduleSettings.passingPeriodLength))
@@ -54,11 +63,11 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
 
     fun getNextClass(schedule: Schedule): ClassPeriod? {
         if (LocalDate().dayOfWeek in 1..5) {
-            var day = LocalDate().dayOfWeek
-            val currentPeriod = currentPeriod(schedule.days[day-1])
+            var day = getCurrentClassDay()
+            val currentPeriod = currentPeriod(schedule.days[day])
             return when (currentPeriod) {
                 -1 -> {
-                    val periodsWithoutFrees = schedule.days[day-1].periods.toMutableList()
+                    val periodsWithoutFrees = schedule.days[day].periods.toMutableList()
                     periodsWithoutFrees.removeAll { it.isFree }
                     periodsWithoutFrees[0]
                 }
