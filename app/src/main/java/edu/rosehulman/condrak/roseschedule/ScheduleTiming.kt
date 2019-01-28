@@ -106,10 +106,10 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
 
     fun getRelativeStartTime(period: ClassPeriod): String {
         val now = DateTime()
-        val timePeriod = if (LocalDateTime().dayOfWeek in 1..5) {
-            Period(now, getStartTime(period).toDateTimeToday())
-        } else {
-            Period(now, getStartTime(period).toDateTimeToday().plusDays(1))
+        val timePeriod = when {
+            LocalDateTime().dayOfWeek in 1..5 -> Period(now, getStartTime(period).toDateTimeToday())
+            LocalDateTime().dayOfWeek == 7 -> Period(now, getStartTime(period).toDateTimeToday().plusDays(1))
+            else -> Period(getStartTime(period).toDateTimeToday().plusDays(2))
         }
 
         val formatter = PeriodFormatterBuilder()

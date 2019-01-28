@@ -22,7 +22,6 @@ class RightNowWidget : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         scheduleTiming.init(context)
-        // Enter relevant functionality for when the first widget is created
     }
 
     override fun onDisabled(context: Context) {
