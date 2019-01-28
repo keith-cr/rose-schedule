@@ -14,5 +14,6 @@
     <color name="textLightPrimary">#FFFFFF</color> <!--%100 opacity-->
     <color name="textLightSecondary">#B2FFFFFF</color> <!--B2 for %70 opacity-->
     <color name="textLightDisabled">#80FFFFFF</color> <!--80 for %50 opacity-->
-    <color name="textLightDisabledDEPRECATED">#4CFFFFFF</color> <!--4C for %30 opacity-->
+    <color name="textLightDisabledDEPRECATED">#4CFFFFFF</color>
+    <color name="white">#fff</color> <!--4C for %30 opacity-->
 </resources>

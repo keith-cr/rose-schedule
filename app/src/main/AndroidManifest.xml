@@ -11,7 +11,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <receiver android:name=".DailyViewWidget">
+
+        <receiver
+            android:name=".WeeklyViewWidget"
+            android:label="Weekly View">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weekly_view_widget_info" />
+        </receiver>
+        <receiver
+            android:name=".DailyViewWidget"
+            android:label="Daily View">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -20,16 +34,12 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/daily_view_widget_info" />
         </receiver>
-        <receiver android:name=".RightNowWidget">
+
+        <activity android:name=".WeeklyViewWidgetConfigureActivity">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/right_now_widget_info" />
-        </receiver>
-
+        </activity>
         <activity
             android:name=".EditPeriodActivity"
             android:label="@string/title_activity_edit_period"

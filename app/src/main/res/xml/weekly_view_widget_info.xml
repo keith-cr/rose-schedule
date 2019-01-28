@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="edu.rosehulman.condrak.roseschedule.WeeklyViewWidgetConfigureActivity"
+    android:initialKeyguardLayout="@layout/weekly_view_widget"
+    android:initialLayout="@layout/weekly_view_widget"
+    android:minWidth="250dp"
+    android:minHeight="250dp"
+    android:previewImage="@drawable/weeklyview_appwidget_preview"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="86400000"
+    android:widgetCategory="home_screen"/>
