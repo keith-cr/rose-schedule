@@ -2,6 +2,8 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.content.Context
 import android.os.Parcelable
+import android.util.Log
+import edu.rosehulman.condrak.roseschedule.WeeklyViewWidget.Companion.schedule
 import kotlinx.android.parcel.Parcelize
 import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.*
@@ -105,8 +107,13 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
     }
 
     fun getRelativeStartTime(period: ClassPeriod): String {
+        Log.d(Constants.TAG, currentPeriod(schedule.days[getCurrentClassDay()]).toString())
         val now = DateTime()
         val timePeriod = when {
+            (LocalDateTime().dayOfWeek in 1..4 && currentPeriod(schedule.days[getCurrentClassDay()]) == -2) ->
+                Period(now, getStartTime(period).toDateTimeToday().plusDays(1))
+            LocalDateTime().dayOfWeek == 5 && currentPeriod(schedule.days[getCurrentClassDay()]) == -2 ->
+                Period(now, getStartTime(period).toDateTimeToday().plusDays(3))
             LocalDateTime().dayOfWeek in 1..5 -> Period(now, getStartTime(period).toDateTimeToday())
             LocalDateTime().dayOfWeek == 7 -> Period(now, getStartTime(period).toDateTimeToday().plusDays(1))
             else -> Period(getStartTime(period).toDateTimeToday().plusDays(2))
@@ -114,14 +121,14 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
 
         val formatter = PeriodFormatterBuilder()
             .appendDays().appendSuffix(" day", " days")
-            .appendSeparator(" and ")
+            .appendSeparatorIfFieldsBefore(" and ")
             .appendHours().appendSuffix("hour", " hours")
-            .appendSeparator(" and ")
+            .appendSeparatorIfFieldsBefore(" and ")
             .appendMinutes().appendSuffix(" minute", " minutes")
             .printZeroNever()
             .toFormatter()
 
-        return formatter.print(timePeriod)
+        return formatter.print(timePeriod.plusMinutes(1))
     }
 
     fun getRelativeEndTime(period: ClassPeriod): String {
@@ -133,6 +140,6 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
             .printZeroNever()
             .toFormatter()
 
-        return formatter.print(timePeriod)
+        return formatter.print(timePeriod.plusMinutes(1))
     }
 }
