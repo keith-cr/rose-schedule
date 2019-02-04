@@ -48,4 +48,14 @@
         android:hint="@string/location" />
 
     </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/location_text_input_layout"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@color/white"
+        android:id="@+id/saveButton"
+        android:text="@string/save"
+        />
 </RelativeLayout>

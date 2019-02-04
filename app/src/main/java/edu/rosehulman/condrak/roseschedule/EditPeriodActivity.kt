@@ -2,36 +2,79 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.android.synthetic.main.activity_edit_period.*
 
-class EditPeriodActivity : AppCompatActivity() {
-
-    private lateinit var scheduleSettings: ScheduleSettings
+class EditPeriodActivity : AppCompatActivity(), EditPeriodActivityFragment.OnSaveListener {
     private lateinit var schedule: Schedule
     private lateinit var scheduleTiming: ScheduleTiming
     private var day: Int = 0
     private var period: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_period)
-        setSupportActionBar(toolbar)
+    private var uid = ""
+    private lateinit var scheduleRef: DocumentReference
+    private lateinit var listenerRegistration: ListenerRegistration
 
-        scheduleSettings = intent.getParcelableExtra(SCHEDULE_SETTINGS)
-        schedule = intent.getParcelableExtra(SCHEDULE)
-        day = intent.getIntExtra(DAY, 0)
-        period = intent.getIntExtra(PERIOD, 0)
-        scheduleTiming = ScheduleTiming(scheduleSettings)
+    fun addSnapshotListener() {
+        listenerRegistration = scheduleRef
+            .addSnapshotListener { documentSnapshot, e ->
+                if (e != null) {
+                    Log.w(Constants.TAG, "listen error", e)
+                } else {
+                    processSnapshotChanges(documentSnapshot!!)
+                }
+            }
+    }
+
+    override fun onSave(classPeriod: ClassPeriod) {
+        schedule.days[day].periods[period] = classPeriod
+        scheduleRef.set(schedule)
+    }
+
+
+    private fun processSnapshotChanges(documentSnapshot: DocumentSnapshot) {
+        schedule = documentSnapshot.toObject(Schedule::class.java)!!
+        scheduleTiming = ScheduleTiming(schedule.scheduleSettings)
+        scheduleTiming.init(this)
 
         supportFragmentManager.beginTransaction().replace(R.id.content, EditPeriodActivityFragment.newInstance(schedule, day, period, scheduleTiming)).commit()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_edit_period)
+        setSupportActionBar(toolbar)
+
+        day = savedInstanceState?.getInt(DAY) ?: intent.getIntExtra(DAY, 0)
+        period = savedInstanceState?.getInt(PERIOD) ?: intent.getIntExtra(PERIOD, 0)
+        uid = intent.getStringExtra(EditDayActivity.UID)
+        scheduleRef = FirebaseFirestore
+            .getInstance()
+            .collection(Constants.USERS_COLLECTION)
+            .document(uid)
+        addSnapshotListener()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        // Save the user's current game state
+        outState?.run {
+            putInt(DAY, day)
+            putInt(PERIOD, period)
+        }
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(outState)
+    }
+
+
+
     companion object {
-        const val SCHEDULE = "schedule"
-        const val SCHEDULE_SETTINGS = "scheduleSettings"
-        const val SCHEDULE_TIMING = "scheduleTiming"
         const val DAY = "day"
         const val PERIOD = "period"
     }

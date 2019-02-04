@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
+import com.google.gson.Gson
 
 /**
  * Implementation of App Widget functionality.
@@ -26,13 +27,17 @@ class WeeklyViewWidget : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        scheduleTiming.init(context)
+        val prefs = context.getSharedPreferences(Constants.PREFS, Context.MODE_PRIVATE)
+        schedule = Gson().fromJson(prefs.getString(Constants.KEY_SCHEDULE, "")!!, Schedule::class.java)
+        scheduleSettings = schedule!!.scheduleSettings
+        scheduleTiming = ScheduleTiming(scheduleSettings!!)
+        scheduleTiming?.init(context)
     }
 
     companion object {
-        val scheduleSettings = Constants.dummyScheduleSettings
-        val schedule = Constants.dummySchedule
-        val scheduleTiming = Constants.dummyScheduleTiming
+        var scheduleSettings: ScheduleSettings? = null
+        var schedule: Schedule? = null
+        var scheduleTiming: ScheduleTiming? = null
 
         internal fun updateAppWidget(
             context: Context,
@@ -42,35 +47,50 @@ class WeeklyViewWidget : AppWidgetProvider() {
             val widgetColor = WeeklyViewWidgetConfigureActivity.loadColorPref(context, appWidgetId)
 
             val views = RemoteViews(context.packageName, R.layout.weekly_view_widget)
-            for (day in 0 until 5) {
-                val dayText = when (day) {
-                    0 -> R.id.monday
-                    1 -> R.id.tuesday
-                    2 -> R.id.wednesday
-                    3 -> R.id.thursday
-                    else -> R.id.friday
-                }
-                views.setTextColor(dayText, context.resources.getColor(widgetColor, null))
-                for (period in 0 until 10) {
-                    if (day == 0) {
-                        val classPeriod = schedule.days[day].periods[period]
-                        val id = context.resources.getIdentifier("_${period + 1}_period_title", "id", context.packageName)
-                        views.setTextViewText(id, context.resources.getString(R.string.period_title,
-                            classPeriod.getShortPeriodText(), scheduleTiming.getStartTime(classPeriod).toString("h:mm")))
+            if (schedule != null && scheduleTiming != null) {
+                for (day in 0 until 5) {
+                    val dayText = when (day) {
+                        0 -> R.id.monday
+                        1 -> R.id.tuesday
+                        2 -> R.id.wednesday
+                        3 -> R.id.thursday
+                        else -> R.id.friday
+                    }
+                    views.setTextColor(dayText, context.resources.getColor(widgetColor, null))
+                    for (period in 0 until 10) {
+                        if (day == 0) {
+                            val classPeriod = schedule!!.days[day].periods[period]
+                            val id = context.resources.getIdentifier(
+                                "_${period + 1}_period_title",
+                                "id",
+                                context.packageName
+                            )
+                            views.setTextViewText(
+                                id, context.resources.getString(
+                                    R.string.period_title,
+                                    classPeriod.getShortPeriodText(),
+                                    scheduleTiming!!.getStartTime(classPeriod).toString("h:mm")
+                                )
+                            )
+                            views.setTextColor(id, context.resources.getColor(widgetColor, null))
+                        }
+                        val id = context.resources.getIdentifier("day${day}period$period", "id", context.packageName)
+                        val classPeriod = schedule!!.days[day].periods[period]
+                        if (classPeriod.hasLocation())
+                            views.setTextViewText(
+                                id, context.resources.getString(
+                                    R.string.class_text,
+                                    classPeriod.className, classPeriod.classLocation
+                                )
+                            )
+                        else
+                            views.setTextViewText(id, classPeriod.className)
                         views.setTextColor(id, context.resources.getColor(widgetColor, null))
                     }
-                    val id = context.resources.getIdentifier("day${day}period$period", "id", context.packageName)
-                    val classPeriod = schedule.days[day].periods[period]
-                    if (classPeriod.hasLocation())
-                         views.setTextViewText(id, context.resources.getString(R.string.class_text,
-                            classPeriod.className, classPeriod.classLocation))
-                    else
-                        views.setTextViewText(id, classPeriod.className)
-                    views.setTextColor(id, context.resources.getColor(widgetColor, null))
                 }
-            }
 
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+            }
         }
     }
 }

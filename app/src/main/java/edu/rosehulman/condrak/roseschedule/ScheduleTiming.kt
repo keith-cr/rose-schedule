@@ -3,7 +3,6 @@ package edu.rosehulman.condrak.roseschedule
 import android.content.Context
 import android.os.Parcelable
 import android.util.Log
-import edu.rosehulman.condrak.roseschedule.WeeklyViewWidget.Companion.schedule
 import kotlinx.android.parcel.Parcelize
 import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.*
@@ -19,12 +18,12 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
     }
 
     fun getStartTime(classPeriod: ClassPeriod): LocalTime {
-        return scheduleSettings.firstPeriodStartTime.plusMinutes((classPeriod.periodNumber-1)
+        return LocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)
                 *(scheduleSettings.periodLength+scheduleSettings.passingPeriodLength))
     }
 
     fun getEndTime(classPeriod: ClassPeriod): LocalTime {
-        return scheduleSettings.firstPeriodStartTime.plusMinutes((classPeriod.periodNumber-1)
+        return LocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)
                 *(scheduleSettings.periodLength+scheduleSettings.passingPeriodLength)+scheduleSettings.periodLength)
     }
 
@@ -91,7 +90,10 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
         } else {
             val periodsWithoutFrees = schedule.days[0].periods.toMutableList()
             periodsWithoutFrees.removeAll { it.isFree }
-            return periodsWithoutFrees.first()
+            return if (!periodsWithoutFrees.isEmpty())
+                periodsWithoutFrees.first()
+            else
+                null
         }
     }
 
@@ -106,7 +108,7 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
         return day
     }
 
-    fun getRelativeStartTime(period: ClassPeriod): String {
+    fun getRelativeStartTime(schedule: Schedule, period: ClassPeriod): String {
         Log.d(Constants.TAG, currentPeriod(schedule.days[getCurrentClassDay()]).toString())
         val now = DateTime()
         val timePeriod = when {

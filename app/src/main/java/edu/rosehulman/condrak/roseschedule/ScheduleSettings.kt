@@ -2,7 +2,6 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import org.joda.time.LocalTime
 
 @Parcelize
-data class ScheduleSettings (var periodLength: Int, var passingPeriodLength: Int, var firstPeriodStartTime: LocalTime): Parcelable
+data class ScheduleSettings (var periodLength: Int = 0, var passingPeriodLength: Int = 0, var firstPeriodStartTime: String = ""): Parcelable

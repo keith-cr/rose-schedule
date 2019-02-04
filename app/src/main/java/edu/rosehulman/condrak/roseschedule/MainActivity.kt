@@ -5,10 +5,15 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
-import org.joda.time.LocalTime
 
 // Fragment switching code from https://stackoverflow.com/a/46600951
 class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentInteractionListener {
@@ -17,10 +22,43 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
         RIGHT_NOW, DAILY_VIEW, WEEKLY_VIEW
     }
 
-    private lateinit var scheduleSettings: ScheduleSettings
     private lateinit var schedule: Schedule
     private lateinit var scheduleTiming: ScheduleTiming
     private lateinit var currentFragment: CurrentFragment
+
+    private var uid = ""
+    private lateinit var scheduleRef: DocumentReference
+    private lateinit var listenerRegistration: ListenerRegistration
+
+    fun addSnapshotListener() {
+        listenerRegistration = scheduleRef
+            .addSnapshotListener { documentSnapshot, e ->
+                if (e != null) {
+                    Log.w(Constants.TAG, "listen error", e)
+                } else {
+                    processSnapshotChanges(documentSnapshot!!)
+                }
+            }
+    }
+
+    private fun processSnapshotChanges(documentSnapshot: DocumentSnapshot) {
+        schedule = documentSnapshot.toObject(Schedule::class.java)!!
+        scheduleTiming = ScheduleTiming(schedule.scheduleSettings)
+        scheduleTiming.init(this)
+        val prefs = getSharedPreferences(Constants.PREFS, MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putString(Constants.KEY_SCHEDULE, Gson().toJson(schedule))
+        editor.apply()
+        val ft = supportFragmentManager.beginTransaction()
+        val fragment: Fragment = when (currentFragment) {
+            CurrentFragment.RIGHT_NOW -> RightNowFragment.newInstance(schedule, scheduleTiming)
+            CurrentFragment.DAILY_VIEW -> DailyScheduleFragment.newInstance(schedule, scheduleTiming)
+            CurrentFragment.WEEKLY_VIEW -> WeeklyViewFragment.newInstance(schedule, scheduleTiming)
+        }
+        ft.replace(R.id.content, fragment)
+        ft.commit()
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -52,27 +90,18 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
-            scheduleSettings = savedInstanceState.getParcelable(SCHEDULE_SETTINGS)!!
-            schedule = savedInstanceState.getParcelable(SCHEDULE)!!
-            scheduleTiming = savedInstanceState.getParcelable(SCHEDULE_TIMING)!!
+            uid = savedInstanceState.getString(UID)!!
             currentFragment = CurrentFragment.valueOf(savedInstanceState.getString(CURRENT_FRAGMENT)!!)
         } else {
-            scheduleSettings = ScheduleSettings(50,5, LocalTime("08:05"))
-            schedule = Schedule.createDummySchedule(scheduleSettings)
-            scheduleTiming = ScheduleTiming(scheduleSettings)
             currentFragment = CurrentFragment.RIGHT_NOW
+            uid = intent.getStringExtra(UID)
         }
-        scheduleTiming.init(this)
         setContentView(R.layout.activity_main)
-        val ft = supportFragmentManager.beginTransaction()
-        val fragment: Fragment = when (currentFragment) {
-            CurrentFragment.RIGHT_NOW -> RightNowFragment.newInstance(schedule, scheduleTiming)
-            CurrentFragment.DAILY_VIEW -> DailyScheduleFragment.newInstance(schedule, scheduleTiming)
-            CurrentFragment.WEEKLY_VIEW -> WeeklyViewFragment.newInstance(schedule, scheduleTiming)
-        }
-        ft.replace(R.id.content, fragment)
-        ft.commit()
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        scheduleRef = FirebaseFirestore
+            .getInstance()
+            .collection(Constants.USERS_COLLECTION)
+            .document(uid)
+        addSnapshotListener()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -84,8 +113,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
         when (id) {
             R.id.action_edit_schedule -> {
                 val intent = Intent(this, EditDayActivity::class.java).apply {
-                    putExtra(SCHEDULE, schedule)
-                    putExtra(SCHEDULE_SETTINGS, scheduleSettings)
+                    putExtra(UID, uid)
                 }
                 startActivity(intent)
             }
@@ -107,20 +135,18 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
     override fun onSaveInstanceState(outState: Bundle?) {
         // Save the user's current game state
         outState?.run {
-            putParcelable(SCHEDULE, schedule)
-            putParcelable(SCHEDULE_SETTINGS, scheduleSettings)
-            putParcelable(SCHEDULE_TIMING, scheduleTiming)
             putString(CURRENT_FRAGMENT, currentFragment.name)
+            putString(UID, uid)
         }
+
+        listenerRegistration.remove()
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(outState)
     }
 
     companion object {
-        const val SCHEDULE = "schedule"
-        const val SCHEDULE_SETTINGS = "scheduleSettings"
-        const val SCHEDULE_TIMING = "scheduleTiming"
         const val CURRENT_FRAGMENT = "currentFragment"
+        const val UID = "uid"
     }
 }

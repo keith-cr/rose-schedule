@@ -3,53 +3,71 @@ package edu.rosehulman.condrak.roseschedule
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.android.synthetic.main.activity_edit.*
 
 class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInteractionListener {
     override fun onListFragmentInteraction(classPeriod: ClassPeriod, day: Int) {
         val intent = Intent(this, EditPeriodActivity::class.java).apply {
-            putExtra(SCHEDULE, schedule)
+            putExtra(UID, uid)
             putExtra(DAY, day)
             putExtra(PERIOD, classPeriod.periodNumber-1)
-            putExtra(SCHEDULE_SETTINGS, scheduleSettings)
         }
         startActivity(intent)
     }
 
-    private lateinit var scheduleSettings: ScheduleSettings
     private lateinit var schedule: Schedule
     private lateinit var scheduleTiming: ScheduleTiming
     private var day: Int = 0
+
+    private var uid = ""
+    private lateinit var scheduleRef: DocumentReference
+    private lateinit var listenerRegistration: ListenerRegistration
+
+    fun addSnapshotListener() {
+        listenerRegistration = scheduleRef
+            .addSnapshotListener { documentSnapshot, e ->
+                if (e != null) {
+                    Log.w(Constants.TAG, "listen error", e)
+                } else {
+                    processSnapshotChanges(documentSnapshot!!)
+                }
+            }
+    }
+
+    private fun processSnapshotChanges(documentSnapshot: DocumentSnapshot) {
+        schedule = documentSnapshot.toObject(Schedule::class.java)!!
+        scheduleTiming = ScheduleTiming(schedule.scheduleSettings)
+        scheduleTiming.init(this)
+
+        supportFragmentManager.beginTransaction().replace(R.id.content, EditActivityFragment.newInstance(schedule, day,
+            scheduleTiming)).commit()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
         setSupportActionBar(toolbar)
 
-        if (savedInstanceState != null) {
-            scheduleSettings = savedInstanceState.getParcelable(SCHEDULE_SETTINGS)!!
-            schedule = savedInstanceState.getParcelable(SCHEDULE)!!
-            scheduleTiming = savedInstanceState.getParcelable(SCHEDULE_TIMING)!!
-            day = savedInstanceState.getInt(DAY)
-        } else {
-            scheduleSettings = intent.getParcelableExtra(SCHEDULE_SETTINGS)
-            schedule = intent.getParcelableExtra(SCHEDULE)
-            day = intent.getIntExtra(DAY, 0)
-            scheduleTiming = ScheduleTiming(scheduleSettings)
-        }
+        day = savedInstanceState?.getInt(DAY) ?: intent.getIntExtra(DAY, 0)
 
-
-        supportFragmentManager.beginTransaction().replace(R.id.content, EditActivityFragment.newInstance(schedule, day, scheduleTiming)).commit()
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        uid = intent.getStringExtra(UID)
+        scheduleRef = FirebaseFirestore
+            .getInstance()
+            .collection(Constants.USERS_COLLECTION)
+            .document(uid)
+        addSnapshotListener()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         // Save the user's current game state
         outState?.run {
-            putParcelable(SCHEDULE, schedule)
-            putParcelable(SCHEDULE_SETTINGS, scheduleSettings)
-            putParcelable(SCHEDULE_TIMING, scheduleTiming)
             putInt(DAY, day)
         }
 
@@ -58,10 +76,8 @@ class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInt
     }
 
     companion object {
-        const val SCHEDULE = "schedule"
         const val DAY = "day"
         const val PERIOD = "period"
-        const val SCHEDULE_SETTINGS = "scheduleSettings"
-        const val SCHEDULE_TIMING = "scheduleTiming"
+        const val UID = "uid"
     }
 }

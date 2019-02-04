@@ -80,7 +80,7 @@ class RightNowFragment : Fragment() {
             view.nextClassStartTime.text = resources.getString(R.string.class_start_time,
                 scheduleTiming!!.getStartTime(nextClass).toString("h:mm a"))
             view.nextClassStartTimeRelative.text = resources.getString(R.string.class_time_relative,
-                scheduleTiming!!.getRelativeStartTime(nextClass))
+                scheduleTiming!!.getRelativeStartTime(schedule!!, nextClass))
         } else {
             view.nextClassLayout.visibility = View.GONE
         }

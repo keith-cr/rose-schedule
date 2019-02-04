@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Schedule (var scheduleSettings: ScheduleSettings, var days: List<Day>): Parcelable {
+data class Schedule (var scheduleSettings: ScheduleSettings = ScheduleSettings(), var days: MutableList<Day> = ArrayList()): Parcelable {
 
     companion object {
         fun createEmptySchedule(scheduleSettings: ScheduleSettings): Schedule {

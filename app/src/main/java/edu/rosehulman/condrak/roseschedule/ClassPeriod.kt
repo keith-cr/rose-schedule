@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class ClassPeriod (var periodNumber: Int, var className: String, var classLocation: String,
-                        var isFree: Boolean): Parcelable {
+data class ClassPeriod (var periodNumber: Int = 0, var className: String = "", var classLocation: String = "",
+                        var isFree: Boolean = false): Parcelable {
     constructor(periodNumber: Int): this(periodNumber, "Free", "", true)
 
     constructor(periodNumber: Int, className: String, classLocation: String):
