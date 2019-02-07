@@ -32,21 +32,25 @@ class EditPeriodActivityFragment : Fragment() {
             period = it.getInt(ARG_PERIOD)
         }
         val view = inflater.inflate(R.layout.fragment_edit_period, container, false)
-        if (schedule!!.days[day!!].periods[period!!].isFree) {
+        val classPeriod = schedule!!.days[day!!].periods[period!!]
+        if (classPeriod.isFree) {
             view.switchFreePeriod.isChecked = true
             view.name_text_input_layout.visibility = View.GONE
             view.location_text_input_layout.visibility = View.GONE
         } else {
-            view.editClass.setText(schedule!!.days[day!!].periods[period!!].className)
-            view.editLocation.setText(schedule!!.days[day!!].periods[period!!].classLocation)
+            view.editClass.setText(classPeriod.className)
+            view.editLocation.setText(classPeriod.classLocation)
         }
+        view.switchNotification.isChecked = classPeriod.hasNotification
+        view.switchAlarm.isChecked = classPeriod.hasAlarm
+        view.editMinutesBefore.setText(classPeriod.minutesBefore.toString())
         view.switchFreePeriod.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 view.name_text_input_layout.visibility = View.GONE
                 view.location_text_input_layout.visibility = View.GONE
             } else {
-                view.editClass.setText(schedule!!.days[day!!].periods[period!!].className)
-                view.editLocation.setText(schedule!!.days[day!!].periods[period!!].classLocation)
+                view.editClass.setText(classPeriod.className)
+                view.editLocation.setText(classPeriod.classLocation)
                 view.name_text_input_layout.visibility = View.VISIBLE
                 view.location_text_input_layout.visibility = View.VISIBLE
             }
@@ -57,9 +61,12 @@ class EditPeriodActivityFragment : Fragment() {
             } else {
                 ClassPeriod(period!!+1, view.editClass.text.toString(), view.editLocation.text.toString())
             }
+            classPeriod.hasAlarm = view.switchAlarm.isChecked
+            classPeriod.hasNotification = view.switchNotification.isChecked
+            classPeriod.minutesBefore = view.editMinutesBefore.text.toString().toInt()
             listener?.onSave(classPeriod)
         }
-        activity?.title = schedule!!.days[day!!].periods[period!!].getPeriodText()
+        activity?.title = schedule!!.days[day!!].periods[period!!].periodText()
         return view
     }
 

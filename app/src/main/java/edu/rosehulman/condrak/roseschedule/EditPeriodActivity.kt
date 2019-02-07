@@ -3,6 +3,7 @@ package edu.rosehulman.condrak.roseschedule
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,18 +31,30 @@ class EditPeriodActivity : AppCompatActivity(), EditPeriodActivityFragment.OnSav
             }
     }
 
-    override fun onSave(classPeriod: ClassPeriod) {
-        schedule.days[day].periods[period] = classPeriod
-        scheduleRef.set(schedule)
+    override fun onResume() {
+        super.onResume()
+        addSnapshotListener()
     }
 
+    override fun onPause() {
+        super.onPause()
+        listenerRegistration.remove()
+    }
+
+    override fun onSave(classPeriod: ClassPeriod) {
+        schedule.days[day].periods[period] = classPeriod
+        scheduleRef.set(schedule).addOnSuccessListener {
+            Toast.makeText(this, "Class Period Saved", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     private fun processSnapshotChanges(documentSnapshot: DocumentSnapshot) {
         schedule = documentSnapshot.toObject(Schedule::class.java)!!
         scheduleTiming = ScheduleTiming(schedule.scheduleSettings)
         scheduleTiming.init(this)
 
-        supportFragmentManager.beginTransaction().replace(R.id.content, EditPeriodActivityFragment.newInstance(schedule, day, period, scheduleTiming)).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.content, EditPeriodActivityFragment.newInstance(schedule,
+            day, period, scheduleTiming)).commitAllowingStateLoss()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -71,8 +84,6 @@ class EditPeriodActivity : AppCompatActivity(), EditPeriodActivityFragment.OnSav
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(outState)
     }
-
-
 
     companion object {
         const val DAY = "day"

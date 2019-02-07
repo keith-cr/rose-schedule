@@ -53,7 +53,7 @@ class WeeklyViewFragment : Fragment() {
                     val id = resources.getIdentifier("_${period + 1}_period_title", "id", activity?.packageName)
                     val item = view.findViewById<TextView>(id)
                     item.text = resources.getString(R.string.period_title,
-                        classPeriod.getShortPeriodText(), scheduleTiming!!.getStartTime(classPeriod).toString("h:mm"))
+                        classPeriod.shortPeriodText(), scheduleTiming!!.getStartTime(classPeriod).toString("h:mm"))
                     if (scheduleTiming!!.isNow(classPeriod) && DateTime().dayOfWeek-1 in 0 until 5)
                         item.setTextColor(resources.getColor(R.color.colorPrimary, null))
                 }

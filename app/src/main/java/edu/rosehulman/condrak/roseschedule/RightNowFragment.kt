@@ -59,7 +59,7 @@ class RightNowFragment : Fragment() {
         val currClass = scheduleTiming?.getCurrentClass(schedule!!)
         val nextClass = scheduleTiming?.getNextClass(schedule!!)
         if (currClass != null) {
-            view.currentClassPeriodNumber.text = currClass.getPeriodText()
+            view.currentClassPeriodNumber.text = currClass.periodText()
             view.currentClassInfo.text = if (currClass.hasLocation())
                 resources.getString(R.string.class_text, currClass.className, currClass.classLocation)
             else
@@ -72,7 +72,7 @@ class RightNowFragment : Fragment() {
             view.currentClassLayout.visibility = View.GONE
         }
         if (nextClass != null) {
-            view.nextClassPeriodNumber.text = nextClass.getPeriodText()
+            view.nextClassPeriodNumber.text = nextClass.periodText()
             view.nextClassInfo.text = if (nextClass.hasLocation())
                 resources.getString(R.string.class_text, nextClass.className, nextClass.classLocation)
             else

@@ -37,4 +37,9 @@
     <string name="white">White</string>
     <string name="login">Login</string>
     <string name="save">Save</string>
+    <string name="action_logout">Logout</string>
+    <string name="app_logo">App Logo</string>
+    <string name="enable_notification">Enable Notification</string>
+    <string name="enable_alarm">Enable Alarm</string>
+    <string name="minutes_before">Minutes Before</string>
 </resources>

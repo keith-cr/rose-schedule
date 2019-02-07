@@ -2,7 +2,6 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.content.Context
 import android.os.Parcelable
-import android.util.Log
 import kotlinx.android.parcel.Parcelize
 import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.*
@@ -70,7 +69,10 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
                 -1 -> {
                     val periodsWithoutFrees = schedule.days[day].periods.toMutableList()
                     periodsWithoutFrees.removeAll { it.isFree }
-                    periodsWithoutFrees[0]
+                    if (!periodsWithoutFrees.isEmpty())
+                        periodsWithoutFrees.first()
+                    else
+                        null
                 }
                 -2 -> {
                     day += 1
@@ -78,7 +80,10 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
                         day = 1
                     val periodsWithoutFrees = schedule.days[day].periods.toMutableList()
                     periodsWithoutFrees.removeAll { it.isFree }
-                    periodsWithoutFrees[0]
+                    if (!periodsWithoutFrees.isEmpty())
+                        periodsWithoutFrees.first()
+                    else
+                        null
                 }
                 else -> {
                     if (schedule.days[day].periods.size == currentPeriod+1)
@@ -109,7 +114,6 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
     }
 
     fun getRelativeStartTime(schedule: Schedule, period: ClassPeriod): String {
-        Log.d(Constants.TAG, currentPeriod(schedule.days[getCurrentClassDay()]).toString())
         val now = DateTime()
         val timePeriod = when {
             (LocalDateTime().dayOfWeek in 1..4 && currentPeriod(schedule.days[getCurrentClassDay()]) == -2) ->

@@ -10,6 +10,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:textSize="16sp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat"
         android:text="@string/free_period"/>
 
     <Switch
@@ -22,6 +25,7 @@
         android:id="@+id/name_text_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_below="@+id/switchFreePeriod">
 
         <EditText
@@ -35,6 +39,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/location_text_input_layout"
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name_text_input_layout">
@@ -49,10 +54,64 @@
 
     </android.support.design.widget.TextInputLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="6dp"
+        android:textSize="16sp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat"
+        android:layout_below="@id/location_text_input_layout"
+        android:text="@string/enable_notification"/>
+
+    <Switch
+        android:id="@+id/switchNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/location_text_input_layout"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchNotification"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="6dp"
+        android:textSize="16sp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat"
+        android:text="@string/enable_alarm"/>
+
+    <Switch
+        android:id="@+id/switchAlarm"
+        android:layout_below="@id/switchNotification"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/minutes_before_text_input_layout"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/switchAlarm">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/editMinutesBefore"
+            android:layout_margin="0dp"
+            android:hint="@string/minutes_before" />
+
+    </android.support.design.widget.TextInputLayout>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/location_text_input_layout"
+        android:layout_below="@id/minutes_before_text_input_layout"
+        android:layout_marginTop="8dp"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/white"
         android:id="@+id/saveButton"

@@ -42,7 +42,7 @@ class EditDayActivity : AppCompatActivity(), EditDayActivityFragment.OnListFragm
         scheduleTiming = ScheduleTiming(schedule.scheduleSettings)
         scheduleTiming.init(this)
         supportFragmentManager.beginTransaction().replace(R.id.content, EditDayActivityFragment.newInstance(schedule,
-            scheduleTiming)).commit()
+            scheduleTiming)).commitAllowingStateLoss()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -58,6 +58,16 @@ class EditDayActivity : AppCompatActivity(), EditDayActivityFragment.OnListFragm
             .collection(Constants.USERS_COLLECTION)
             .document(uid)
         addSnapshotListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        addSnapshotListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        listenerRegistration.remove()
     }
 
     companion object {

@@ -45,7 +45,7 @@ class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInt
         scheduleTiming.init(this)
 
         supportFragmentManager.beginTransaction().replace(R.id.content, EditActivityFragment.newInstance(schedule, day,
-            scheduleTiming)).commit()
+            scheduleTiming)).commitAllowingStateLoss()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -63,6 +63,16 @@ class EditActivity : AppCompatActivity(), EditActivityFragment.OnListFragmentInt
             .collection(Constants.USERS_COLLECTION)
             .document(uid)
         addSnapshotListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        addSnapshotListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        listenerRegistration.remove()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

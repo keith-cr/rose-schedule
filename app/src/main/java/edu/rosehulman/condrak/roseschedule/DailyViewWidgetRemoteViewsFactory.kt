@@ -42,7 +42,7 @@ class DailyViewWidgetRemoteViewsFactory(val context: Context, val intent: Intent
     override fun getViewAt(position: Int): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.daily_view_widget_list_item)
         val period = schedule!!.days[scheduleTiming!!.getCurrentClassDay()].periods[position]
-        views.setTextViewText(R.id.periodTextView, period.getPeriodText())
+        views.setTextViewText(R.id.periodTextView, period.periodText())
         if (period.hasLocation())
             views.setTextViewText(R.id.classTextView, context.resources.getString(R.string.class_text, period.className, period.classLocation))
         else

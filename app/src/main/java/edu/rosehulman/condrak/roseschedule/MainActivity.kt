@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
             CurrentFragment.WEEKLY_VIEW -> WeeklyViewFragment.newInstance(schedule, scheduleTiming)
         }
         ft.replace(R.id.content, fragment)
-        ft.commit()
+        ft.commitAllowingStateLoss()
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
@@ -120,8 +121,11 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
             R.id.action_notifications -> {
 
             }
-            R.id.action_login -> {
-
+            R.id.action_logout -> {
+                val auth = FirebaseAuth.getInstance()
+                auth.signOut()
+                val intent = Intent(this, AuthActivity::class.java)
+                startActivity(intent)
             }
         }
 
@@ -132,14 +136,22 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        addSnapshotListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        listenerRegistration.remove()
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         // Save the user's current game state
         outState?.run {
             putString(CURRENT_FRAGMENT, currentFragment.name)
             putString(UID, uid)
         }
-
-        listenerRegistration.remove()
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(outState)

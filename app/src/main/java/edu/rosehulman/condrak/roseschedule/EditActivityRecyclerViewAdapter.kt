@@ -36,7 +36,7 @@ class EditActivityRecyclerViewAdapter(
         with(holder.mView) {
             tag = period
             setOnClickListener(mOnClickListener)
-            periodTextView.text = period.getPeriodText()
+            periodTextView.text = period.periodText()
             if (period.hasLocation())
                 classTextView.text = resources.getString(R.string.class_text, period.className, period.classLocation)
             else

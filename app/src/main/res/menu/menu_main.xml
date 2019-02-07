@@ -17,9 +17,9 @@
     <group
         android:id="@+id/group_auth">
         <item
-            android:id="@+id/action_login"
+            android:id="@+id/action_logout"
             android:orderInCategory="100"
-            android:title="@string/action_login"
+            android:title="@string/action_logout"
             app:showAsAction="never" />
     </group>
 </menu>
