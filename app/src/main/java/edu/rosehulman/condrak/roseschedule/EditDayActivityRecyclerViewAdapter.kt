@@ -9,7 +9,6 @@ import kotlinx.android.synthetic.main.fragment_edit_day.view.*
 
 class EditDayActivityRecyclerViewAdapter(
     private val schedule: Schedule,
-    scheduleTiming: ScheduleTiming,
     private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<EditDayActivityRecyclerViewAdapter.ViewHolder>() {
     private val mOnClickListener: View.OnClickListener

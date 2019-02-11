@@ -3,7 +3,6 @@ package edu.rosehulman.condrak.roseschedule
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.util.Log
 import android.widget.RemoteViews
 import com.google.gson.Gson
 
@@ -23,7 +22,6 @@ class WeeklyViewWidget : AppWidgetProvider() {
         // There may be multiple widgets active, so update all of them
         val prefs = context.getSharedPreferences(Constants.PREFS, Context.MODE_PRIVATE)
         schedule = Gson().fromJson(prefs.getString(Constants.KEY_SCHEDULE, "")!!, Schedule::class.java)
-        Log.d(Constants.TAG, schedule.toString())
         scheduleSettings = schedule!!.scheduleSettings
         scheduleTiming = ScheduleTiming(scheduleSettings!!)
         scheduleTiming?.init(context)
@@ -36,7 +34,6 @@ class WeeklyViewWidget : AppWidgetProvider() {
         super.onEnabled(context)
         val prefs = context.getSharedPreferences(Constants.PREFS, Context.MODE_PRIVATE)
         schedule = Gson().fromJson(prefs.getString(Constants.KEY_SCHEDULE, "")!!, Schedule::class.java)
-        Log.d(Constants.TAG, schedule.toString())
         scheduleSettings = schedule!!.scheduleSettings
         scheduleTiming = ScheduleTiming(scheduleSettings!!)
         scheduleTiming?.init(context)

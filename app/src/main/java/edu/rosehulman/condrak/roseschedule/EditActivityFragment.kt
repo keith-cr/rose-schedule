@@ -42,7 +42,7 @@ class EditActivityFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = EditActivityRecyclerViewAdapter(schedule!!, day!!, scheduleTiming!!, listener)
+                adapter = EditActivityRecyclerViewAdapter(schedule!!, day!!, listener)
             }
         }
         return view

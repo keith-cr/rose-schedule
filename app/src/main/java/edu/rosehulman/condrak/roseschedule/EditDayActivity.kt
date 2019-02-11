@@ -19,6 +19,8 @@ class EditDayActivity : AppCompatActivity(), EditDayActivityFragment.OnListFragm
         startActivity(intent)
     }
 
+    // TODO: Add schedule settings activity
+
     private lateinit var schedule: Schedule
     private lateinit var scheduleTiming: ScheduleTiming
 

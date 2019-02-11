@@ -2,6 +2,7 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.content.Context
 import android.os.Parcelable
+import android.util.Log
 import kotlinx.android.parcel.Parcelize
 import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.*
@@ -122,7 +123,7 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
                 Period(now, getStartTime(period).toDateTimeToday().plusDays(3))
             LocalDateTime().dayOfWeek in 1..5 -> Period(now, getStartTime(period).toDateTimeToday())
             LocalDateTime().dayOfWeek == 7 -> Period(now, getStartTime(period).toDateTimeToday().plusDays(1))
-            else -> Period(getStartTime(period).toDateTimeToday().plusDays(2))
+            else -> Period(now, getStartTime(period).toDateTimeToday().plusDays(2))
         }
 
         val formatter = PeriodFormatterBuilder()
@@ -148,4 +149,31 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
 
         return formatter.print(timePeriod.plusMinutes(1))
     }
+
+    fun getNotificationDelay(day: Int, period: ClassPeriod, forceNext: Boolean): Long {
+        val now = DateTime()
+        val date = if (now.dayOfWeek == day && !forceNext) {
+            if (getStartTime(period).minusMinutes(period.minutesBefore).isBefore(LocalTime()))
+                calcNextDay(day)
+            else
+                LocalDate()
+        } else
+             calcNextDay(day)
+        val dateTime = date.toDateTime(getStartTime(period).minusMinutes(period.minutesBefore))
+        val timePeriod = Period(now, dateTime)
+
+        Log.d(Constants.TAG, timePeriod.toString())
+        Log.d(Constants.TAG, Duration(timePeriod.toStandardDuration().millis).toString())
+
+        return timePeriod.toStandardDuration().millis
+    }
+
+    private fun calcNextDay(day: Int): LocalDate {
+        var d = LocalDate()
+        if (d.dayOfWeek >= day) {
+            d = d.plusWeeks(1)
+        }
+        return d.withDayOfWeek(day)
+    }
+
 }

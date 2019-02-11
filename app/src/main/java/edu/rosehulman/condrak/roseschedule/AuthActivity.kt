@@ -1,13 +1,21 @@
 package edu.rosehulman.condrak.roseschedule
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import io.sentry.Sentry
+import io.sentry.android.AndroidSentryClientFactory
+import io.sentry.event.UserBuilder
 import kotlinx.android.synthetic.main.activity_auth.*
+
 
 class AuthActivity : AppCompatActivity() {
 
@@ -30,11 +38,37 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
+        val ctx = this.applicationContext
+
+        // Use the Sentry DSN (client key) from the Project Settings page on Sentry
+        val sentryDsn = "https://a8d13b1126b24e2388ba5502bbe067cc@sentry.io/1390907"
+        Sentry.init(sentryDsn, AndroidSentryClientFactory(ctx))
+
+        createNotificationChannel(Constants.CLASS_NOTIFICATIONS_ID)
+
         initializeListeners()
         loginButton.setOnClickListener {
             launchLoginUI()
         }
     }
+
+    private fun createNotificationChannel(channelID: String) {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Class Notifications"
+            val descriptionText = "Notifications for classes"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelID, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
 
     private fun launchLoginUI() {
         val providers = arrayListOf(
@@ -56,6 +90,7 @@ class AuthActivity : AppCompatActivity() {
         authListener = FirebaseAuth.AuthStateListener { auth: FirebaseAuth ->
             val user = auth.currentUser
             if (user != null) {
+                Sentry.getContext().user = UserBuilder().setId(user.uid).build()
                 doInitSetup(user.uid)
             } else {
                 loginButton.visibility = View.VISIBLE

@@ -41,7 +41,7 @@ class EditDayActivityFragment : Fragment() {
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter = EditDayActivityRecyclerViewAdapter(schedule!!, scheduleTiming!!, listener)
+                adapter = EditDayActivityRecyclerViewAdapter(schedule!!, listener)
             }
         }
         return view
@@ -52,7 +52,7 @@ class EditDayActivityFragment : Fragment() {
         if (context is OnListFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnListFragmentInteractionListener")
         }
     }
 

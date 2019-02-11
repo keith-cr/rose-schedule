@@ -4,6 +4,7 @@
     package="edu.rosehulman.condrak.roseschedule">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="false"
@@ -92,6 +93,8 @@
         <service
             android:name=".DailyViewWidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver android:name=".NotificationPublisher" />
     </application>
 
 </manifest>

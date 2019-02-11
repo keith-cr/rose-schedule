@@ -12,9 +12,9 @@ import android.widget.RadioGroup
  * The configuration screen for the [WeeklyViewWidget] AppWidget.
  */
 class WeeklyViewWidgetConfigureActivity : Activity() {
-    internal var mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-    internal lateinit var mRadioGroup: RadioGroup
-    internal var mOnClickListener: View.OnClickListener = View.OnClickListener {
+    private var mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
+    private lateinit var mRadioGroup: RadioGroup
+    private var mOnClickListener: View.OnClickListener = View.OnClickListener {
         val context = this@WeeklyViewWidgetConfigureActivity
 
         // When the button is clicked, store the string locally
@@ -63,8 +63,8 @@ class WeeklyViewWidgetConfigureActivity : Activity() {
 
     companion object {
 
-        private val PREFS_NAME = "edu.rosehulman.condrak.roseschedule.WeeklyViewWidget"
-        private val PREF_PREFIX_KEY = "appwidget_"
+        private const val PREFS_NAME = "edu.rosehulman.condrak.roseschedule.WeeklyViewWidget"
+        private const val PREF_PREFIX_KEY = "appwidget_"
 
         // Write the prefix to the SharedPreferences object for this widget
         internal fun saveColorPref(context: Context, appWidgetId: Int, color: Int) {

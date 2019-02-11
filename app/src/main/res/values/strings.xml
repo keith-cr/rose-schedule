@@ -7,6 +7,9 @@
     <string name="title_daily_view">Daily View</string>
     <string name="title_weekly_view">Weekly View</string>
     <string name="class_text">%1$s in %2$s</string>
+    <string name="notification_title">%1$s starts soon</string>
+    <string name="notification_text">%1$s starts in %2$s minutes</string>
+    <string name="notification_text_with_location">%1$s at %2$s starts in %3$s minutes</string>
     <string name="daily_fragment_title">%1$s\'s Schedule</string>
     <string name="schedule">Schedule</string>
     <string name="weekly_schedule">Weekly Schedule</string>
