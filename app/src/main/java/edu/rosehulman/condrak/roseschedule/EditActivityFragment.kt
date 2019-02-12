@@ -45,6 +45,7 @@ class EditActivityFragment : Fragment() {
                 adapter = EditActivityRecyclerViewAdapter(schedule!!, day!!, listener)
             }
         }
+        activity?.title = schedule!!.days[day!!].name
         return view
     }
 

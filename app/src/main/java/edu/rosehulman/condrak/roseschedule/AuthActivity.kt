@@ -44,7 +44,8 @@ class AuthActivity : AppCompatActivity() {
         val sentryDsn = "https://a8d13b1126b24e2388ba5502bbe067cc@sentry.io/1390907"
         Sentry.init(sentryDsn, AndroidSentryClientFactory(ctx))
 
-        createNotificationChannel(Constants.CLASS_NOTIFICATIONS_ID)
+        createNotificationChannel(Constants.CLASS_NOTIFICATIONS_CHANNEL_ID)
+        createNotificationChannel(Constants.CLASS_ALARMS_CHANNEL_ID)
 
         initializeListeners()
         loginButton.setOnClickListener {
@@ -56,11 +57,14 @@ class AuthActivity : AppCompatActivity() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Class Notifications"
-            val descriptionText = "Notifications for classes"
+            val name = if (channelID == Constants.CLASS_ALARMS_CHANNEL_ID) "Class Alarms" else "Class Notifications"
+            val descriptionText = if (channelID == Constants.CLASS_ALARMS_CHANNEL_ID) "Alarms for classes" else "Notifications for classes"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelID, name, importance).apply {
                 description = descriptionText
+            }
+            if (channelID == Constants.CLASS_ALARMS_CHANNEL_ID) {
+                channel.setSound(null, null)
             }
             // Register the channel with the system
             val notificationManager: NotificationManager =
@@ -111,11 +115,16 @@ class AuthActivity : AppCompatActivity() {
                         .document(uid).set(Schedule.createEmptySchedule(ScheduleSettings(50,
                             5, "8:05 AM")))
                 }
+                val prefs = getSharedPreferences(Constants.PREFS, MODE_PRIVATE)
+                val editor = prefs.edit()
+                editor.putString(Constants.KEY_UID, uid).apply()
                 switchToMainActivity(uid)
             }
     }
 
     private fun switchToMainActivity(uid: String) {
+        loginButton.visibility = View.GONE
+        loader.visibility = View.VISIBLE
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra(UID, uid)
         }

@@ -2,6 +2,8 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
@@ -11,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.RemoteViews
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -19,7 +22,6 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import org.joda.time.DateTimeConstants
-
 
 // Fragment switching code from https://stackoverflow.com/a/46600951
 class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentInteractionListener {
@@ -47,11 +49,9 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
             }
     }
 
-    // TODO: Implement alarms
-
     private fun removeRegisteredNotifications() {
         val prefs = getSharedPreferences(Constants.PREFS, MODE_PRIVATE)
-        val requestCodesWrapperString = prefs.getString(Constants.KEY_PENDINGINTENTS, null)
+        val requestCodesWrapperString = prefs.getString(Constants.KEY_REQUEST_CODES, null)
         val requestCodesWrapper = if (requestCodesWrapperString != null)
             Gson().fromJson(requestCodesWrapperString, RequestCodesWrapper::class.java)
         else
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
         }
         requestCodesWrapper.requestCodes.clear()
         val editor = prefs.edit()
-        editor.putString(Constants.KEY_PENDINGINTENTS, Gson().toJson(requestCodesWrapper))
+        editor.putString(Constants.KEY_REQUEST_CODES, Gson().toJson(requestCodesWrapper))
         editor.apply()
     }
 
@@ -82,10 +82,11 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
                 3 -> DateTimeConstants.THURSDAY
                 else -> DateTimeConstants.FRIDAY
             }
-            for (period in day.periods) {
-                if (period.hasNotification) {
+            for (periodIndex in day.periods.indices) {
+                val period = day.periods[periodIndex]
+                if (period.hasNotification || period.hasAlarm) {
                     val delay: Long = scheduleTiming.getNotificationDelay(dayConstant, period, false)
-                    scheduleNotification(NotificationInfo(dayConstant, period, scheduleTiming, 1), delay)
+                    scheduleNotification(NotificationInfo(dayConstant, dayIndex, periodIndex), delay)
                 }
             }
         }
@@ -95,24 +96,24 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
         val bundle = Bundle()
         bundle.putParcelable(NotificationPublisher.NOTIFICATION_INFO, notificationInfo)
         val notificationIntent = Intent(applicationContext, NotificationPublisher::class.java)
-        notificationIntent.putExtra("BUNDLE", bundle)
+        notificationIntent.putExtra(Constants.KEY_BUNDLE, bundle)
         val requestCode = System.currentTimeMillis().toInt()
         val pendingIntent = PendingIntent.getBroadcast(applicationContext, requestCode,
             notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val futureInMillis = SystemClock.elapsedRealtime() + delay
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent)
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent)
 
         val prefs = getSharedPreferences(Constants.PREFS, MODE_PRIVATE)
-        val requestCodesWrapperString = prefs.getString(Constants.KEY_PENDINGINTENTS, null)
+        val requestCodesWrapperString = prefs.getString(Constants.KEY_REQUEST_CODES, null)
         val requestCodesWrapper = if (requestCodesWrapperString != null)
             Gson().fromJson(requestCodesWrapperString, RequestCodesWrapper::class.java)
         else
             RequestCodesWrapper(ArrayList())
         requestCodesWrapper.requestCodes.add(requestCode)
         val editor = prefs.edit()
-        editor.putString(Constants.KEY_PENDINGINTENTS, Gson().toJson(requestCodesWrapper))
+        editor.putString(Constants.KEY_REQUEST_CODES, Gson().toJson(requestCodesWrapper))
         editor.apply()
     }
 
@@ -124,6 +125,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
         val editor = prefs.edit()
         editor.putString(Constants.KEY_SCHEDULE, Gson().toJson(schedule))
         editor.apply()
+        updateWidgets()
         registerNotifications()
         val ft = supportFragmentManager.beginTransaction()
         val fragment: Fragment = when (currentFragment) {
@@ -134,6 +136,26 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
         ft.replace(R.id.content, fragment)
         ft.commitAllowingStateLoss()
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    }
+
+    private fun updateWidgets() {
+        val widgetManager = AppWidgetManager.getInstance(this)
+        val weeklyWidgetComponent = ComponentName(this, WeeklyViewWidget::class.java)
+        var appWidgetIds = widgetManager.getAppWidgetIds(weeklyWidgetComponent)
+        for (i in appWidgetIds.indices) {
+            WeeklyViewWidget.updateAppWidget(this, widgetManager, i)
+        }
+        val widgetComponent = ComponentName(this, DailyViewWidget::class.java)
+        appWidgetIds = widgetManager.getAppWidgetIds(widgetComponent)
+        for (i in appWidgetIds.indices) {
+            val views = RemoteViews(
+                this.packageName,
+                R.layout.daily_view_widget
+            )
+            views.setRemoteAdapter(R.id.widgetListView, Intent(this, DailyViewWidgetRemoteViewsService::class.java))
+            widgetManager.updateAppWidget(i, views)
+        }
+
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -212,16 +234,6 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
 
     override fun onListFragmentInteraction(item: Schedule?) {
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        addSnapshotListener()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        listenerRegistration.remove()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

@@ -48,4 +48,5 @@
     <string name="period_length">Period Length</string>
     <string name="passing_period_length">Passing Period Length</string>
     <string name="first_period_start_time">First Period Start Time</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

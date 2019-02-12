@@ -20,7 +20,6 @@ class EditPeriodActivityFragment : Fragment() {
 
     private var listener: OnSaveListener? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
