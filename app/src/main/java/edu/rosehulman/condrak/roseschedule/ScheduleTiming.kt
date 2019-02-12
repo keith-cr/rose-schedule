@@ -2,12 +2,13 @@ package edu.rosehulman.condrak.roseschedule
 
 import android.content.Context
 import android.os.Parcelable
-import android.util.Log
 import kotlinx.android.parcel.Parcelize
 import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.*
+import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.PeriodFormatterBuilder
 import java.util.*
+
 
 @Parcelize
 class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelable {
@@ -18,17 +19,20 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
     }
 
     fun getStartTime(classPeriod: ClassPeriod): LocalTime {
-        return LocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)
+        val fmt = DateTimeFormat.forPattern("h:mm a")
+        return fmt.parseLocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)
                 *(scheduleSettings.periodLength+scheduleSettings.passingPeriodLength))
     }
 
     fun getEndTime(classPeriod: ClassPeriod): LocalTime {
-        return LocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)
+        val fmt = DateTimeFormat.forPattern("h:mm a")
+        return fmt.parseLocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)
                 *(scheduleSettings.periodLength+scheduleSettings.passingPeriodLength)+scheduleSettings.periodLength)
     }
 
     fun isNow(classPeriod: ClassPeriod): Boolean {
-        return getStartTime(classPeriod).minusMinutes(scheduleSettings.passingPeriodLength).isBefore(LocalTime()) && getEndTime(classPeriod).isAfter(LocalTime())
+        return getStartTime(classPeriod).minusMinutes(scheduleSettings.passingPeriodLength).isBefore(LocalTime()) &&
+                getEndTime(classPeriod).isAfter(LocalTime())
     }
 
     private fun currentPeriod(day: Day): Int {
@@ -161,9 +165,6 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
              calcNextDay(day)
         val dateTime = date.toDateTime(getStartTime(period).minusMinutes(period.minutesBefore))
         val timePeriod = Period(now, dateTime)
-
-        Log.d(Constants.TAG, timePeriod.toString())
-        Log.d(Constants.TAG, Duration(timePeriod.toStandardDuration().millis).toString())
 
         return timePeriod.toStandardDuration().millis
     }

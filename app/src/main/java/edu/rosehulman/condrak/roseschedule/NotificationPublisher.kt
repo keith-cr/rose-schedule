@@ -27,7 +27,7 @@ class NotificationPublisher : BroadcastReceiver() {
         val bundle = intent.getBundleExtra("BUNDLE")
         val notificationInfo = bundle.getParcelable<NotificationInfo>(NOTIFICATION_INFO)!!
         notificationManager.notify(notificationInfo.notificationId, getNotification(notificationInfo.period,
-            Constants.CLASS_NOTIFICATIONS_ID, context))
+            notificationInfo.scheduleTiming, Constants.CLASS_NOTIFICATIONS_ID, context))
         val period = notificationInfo.period
         val dayConstant = notificationInfo.day
         val scheduleTiming = notificationInfo.scheduleTiming
@@ -35,15 +35,17 @@ class NotificationPublisher : BroadcastReceiver() {
         scheduleNotification(NotificationInfo(dayConstant, period, scheduleTiming, 1), delay, context)
     }
 
-    private fun getNotification(period: ClassPeriod, channelID: String, context: Context): Notification {
+    private fun getNotification(period: ClassPeriod, scheduleTiming: ScheduleTiming, channelID: String,
+                                context: Context): Notification {
         val builder = NotificationCompat.Builder(context, channelID)
-        builder.setContentTitle(context.resources.getString(R.string.notification_title, period.className))
+        builder.setContentTitle(context.resources.getString(R.string.notification_title, period.className,
+            period.minutesBefore.toString()))
         builder.setContentText(if (period.hasLocation())
             context.resources.getString(R.string.notification_text_with_location,
-                period.className, period.classLocation, period.minutesBefore.toString())
+                period.className, period.classLocation, scheduleTiming.getStartTime(period).toString("h:mm a"))
         else
             context.resources.getString(R.string.notification_text,
-                period.className, period.minutesBefore.toString()))
+                period.className, scheduleTiming.getStartTime(period).toString("h:mm a")))
         builder.setSmallIcon(R.drawable.ic_logo)
         builder.setChannelId(channelID)
         return builder.build()

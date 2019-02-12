@@ -58,7 +58,7 @@ class AuthActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Class Notifications"
             val descriptionText = "Notifications for classes"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelID, name, importance).apply {
                 description = descriptionText
             }
@@ -109,7 +109,7 @@ class AuthActivity : AppCompatActivity() {
                         .getInstance()
                         .collection(Constants.USERS_COLLECTION)
                         .document(uid).set(Schedule.createEmptySchedule(ScheduleSettings(50,
-                            5, "08:05")))
+                            5, "8:05 AM")))
                 }
                 switchToMainActivity(uid)
             }

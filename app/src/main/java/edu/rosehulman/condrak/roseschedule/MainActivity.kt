@@ -193,6 +193,12 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
                 }
                 startActivity(intent)
             }
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java).apply {
+                    putExtra(UID, uid)
+                }
+                startActivity(intent)
+            }
             R.id.action_logout -> {
                 val auth = FirebaseAuth.getInstance()
                 auth.signOut()

@@ -75,7 +75,7 @@ class EditPeriodActivityFragment : Fragment() {
         if (context is OnSaveListener) {
             listener = context
         } else {
-            throw RuntimeException("$context must implement OnSaveListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
