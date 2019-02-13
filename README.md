@@ -16,6 +16,6 @@ Widget support, configurable notifications and cloud syncing via Firebase.
 Developed at Rose-Hulman Institute of Technology:elephant: for the CSSE 483 Android Development Class.
 
 [More Info](https://rosehulmanprojectvault.org/project/-LTd_3F4J_4lzqqfMIhC)
-[Google Play (coming soon)]()
+[Google Play](https://play.google.com/store/apps/details?id=edu.rosehulman.condrak.roseschedule)
 
 *Not affiliated with or endorsed by Rose-Hulman Institute of Technology*
