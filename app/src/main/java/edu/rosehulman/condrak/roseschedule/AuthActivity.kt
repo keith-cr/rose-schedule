@@ -82,6 +82,7 @@ class AuthActivity : AppCompatActivity() {
 
         val loginIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
+            .setIsSmartLockEnabled(false, true)
             .setAvailableProviders(providers)
             .setLogo(R.drawable.ic_logo)
             .build()

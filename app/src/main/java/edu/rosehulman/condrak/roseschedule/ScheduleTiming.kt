@@ -18,6 +18,16 @@ class ScheduleTiming(private val scheduleSettings: ScheduleSettings) : Parcelabl
         DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getDefault()))
     }
 
+    fun isEmptySchedule(schedule: Schedule): Boolean {
+        for (day in schedule.days) {
+            for (period in day.periods) {
+                if (!period.isFree)
+                    return false
+            }
+        }
+        return true
+    }
+
     fun getStartTime(classPeriod: ClassPeriod): LocalTime {
         val fmt = DateTimeFormat.forPattern("h:mm a")
         return fmt.parseLocalTime(scheduleSettings.firstPeriodStartTime).plusMinutes((classPeriod.periodNumber-1)

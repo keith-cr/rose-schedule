@@ -56,33 +56,47 @@ class RightNowFragment : Fragment() {
     }
 
     private fun drawView(view: View) {
-        val currClass = scheduleTiming?.getCurrentClass(schedule!!)
-        val nextClass = scheduleTiming?.getNextClass(schedule!!)
-        if (currClass != null) {
-            view.currentClassPeriodNumber.text = currClass.periodText()
-            view.currentClassInfo.text = if (currClass.hasLocation())
-                resources.getString(R.string.class_text, currClass.className, currClass.classLocation)
-            else
-                currClass.className
-            view.currentClassEndTime.text = resources.getString(R.string.class_end_time,
-                scheduleTiming!!.getEndTime(currClass).toString("h:mm a"))
-            view.currentClassEndTimeRelative.text = resources.getString(R.string.class_time_relative,
-                scheduleTiming!!.getRelativeEndTime(currClass))
-        } else {
+        if (scheduleTiming!!.isEmptySchedule(schedule!!)) {
             view.currentClassLayout.visibility = View.GONE
-        }
-        if (nextClass != null) {
-            view.nextClassPeriodNumber.text = nextClass.periodText()
-            view.nextClassInfo.text = if (nextClass.hasLocation())
-                resources.getString(R.string.class_text, nextClass.className, nextClass.classLocation)
-            else
-                nextClass.className
-            view.nextClassStartTime.text = resources.getString(R.string.class_start_time,
-                scheduleTiming!!.getStartTime(nextClass).toString("h:mm a"))
-            view.nextClassStartTimeRelative.text = resources.getString(R.string.class_time_relative,
-                scheduleTiming!!.getRelativeStartTime(schedule!!, nextClass))
-        } else {
             view.nextClassLayout.visibility = View.GONE
+            view.welcomeLayout.visibility = View.VISIBLE
+        } else {
+            val currClass = scheduleTiming?.getCurrentClass(schedule!!)
+            val nextClass = scheduleTiming?.getNextClass(schedule!!)
+            if (currClass != null) {
+                view.currentClassPeriodNumber.text = currClass.periodText()
+                view.currentClassInfo.text = if (currClass.hasLocation())
+                    resources.getString(R.string.class_text, currClass.className, currClass.classLocation)
+                else
+                    currClass.className
+                view.currentClassEndTime.text = resources.getString(
+                    R.string.class_end_time,
+                    scheduleTiming!!.getEndTime(currClass).toString("h:mm a")
+                )
+                view.currentClassEndTimeRelative.text = resources.getString(
+                    R.string.class_time_relative,
+                    scheduleTiming!!.getRelativeEndTime(currClass)
+                )
+            } else {
+                view.currentClassLayout.visibility = View.GONE
+            }
+            if (nextClass != null) {
+                view.nextClassPeriodNumber.text = nextClass.periodText()
+                view.nextClassInfo.text = if (nextClass.hasLocation())
+                    resources.getString(R.string.class_text, nextClass.className, nextClass.classLocation)
+                else
+                    nextClass.className
+                view.nextClassStartTime.text = resources.getString(
+                    R.string.class_start_time,
+                    scheduleTiming!!.getStartTime(nextClass).toString("h:mm a")
+                )
+                view.nextClassStartTimeRelative.text = resources.getString(
+                    R.string.class_time_relative,
+                    scheduleTiming!!.getRelativeStartTime(schedule!!, nextClass)
+                )
+            } else {
+                view.nextClassLayout.visibility = View.GONE
+            }
         }
     }
 

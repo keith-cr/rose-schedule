@@ -49,4 +49,8 @@
     <string name="passing_period_length">Passing Period Length</string>
     <string name="first_period_start_time">First Period Start Time</string>
     <string name="dismiss">Dismiss</string>
+    <string name="your_schedule_is_currently_empty">Your schedule is currently empty.</string>
+    <string name="click_the">Click the</string>
+    <string name="button_to_edit_your">button to edit your</string>
+    <string name="schedule_welcome">schedule.</string>
 </resources>

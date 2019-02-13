@@ -226,6 +226,7 @@ class MainActivity : AppCompatActivity(), DailyScheduleFragment.OnListFragmentIn
                 auth.signOut()
                 val intent = Intent(this, AuthActivity::class.java)
                 startActivity(intent)
+                finish()
             }
         }
 
