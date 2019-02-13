@@ -1,4 +1,5 @@
 # Rose Schedule
+![Rose Schedule](https://github.com/keith-cr/rose-schedule/blob/master/Rose%20Schedule.png?raw=true)
 Conveniently displays your daily, weekly and "right now" schedule, right from your homescreen or via the app. Includes 
 Widget support, configurable notifications and cloud syncing via Firebase.
 
